@@ -1,9 +1,7 @@
 ﻿namespace Nancy.SimpleRpc.Tests
 {
-    using System;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Nancy.Bootstrapper;
     using Nancy.SimpleRpc.Client;
     using Nancy.SimpleRpc.Testing;
     using Nancy.TinyIoc;

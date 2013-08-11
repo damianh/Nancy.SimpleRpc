@@ -10,7 +10,7 @@
     public abstract class SimpleRpcModule : NancyModule
     {
         private readonly IServiceResolver _serviceResolver;
-        private readonly Assembly _serviceAssembly;
+        private static IEnumerable<Action<object>> _configureModuleActions;
 
         protected SimpleRpcModule(IServiceResolver serviceResolver)
             : this(serviceResolver, Assembly.GetCallingAssembly(), string.Empty)
@@ -23,18 +23,29 @@
         protected SimpleRpcModule(IServiceResolver serviceResolver, Assembly serviceAssembly, string modulePath) : base(modulePath)
         {
             _serviceResolver = serviceResolver;
-            _serviceAssembly = serviceAssembly;
-            IEnumerable<Type> services = _serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<>)));
 
-            foreach (Type service in services)
+            if (_configureModuleActions == null)
             {
-                var typeArguments = service.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IService<>))
-                    .SelectMany(i => i.GetGenericArguments())
-                    .ToArray();
-                MethodInfo methodInfo = typeof(SimpleRpcModule).GetMethod("Handle", BindingFlags.NonPublic | BindingFlags.Instance);
-                MethodInfo handleMethod = methodInfo.MakeGenericMethod(typeArguments);
-                handleMethod.Invoke(this, new object[] { });
+                var configureActions = new List<Action<object>>();
+                IEnumerable<Type> services = serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<>)));
+
+                foreach (Type service in services)
+                {
+                    var typeArguments =
+                        service.GetInterfaces()
+                            .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IService<>))
+                            .SelectMany(i => i.GetGenericArguments())
+                            .ToArray();
+                    MethodInfo methodInfo = typeof (SimpleRpcModule).GetMethod("Handle", BindingFlags.NonPublic | BindingFlags.Instance);
+                    MethodInfo handleMethod = methodInfo.MakeGenericMethod(typeArguments);
+                    configureActions.Add(obj => handleMethod.Invoke(obj, new object[] { }));
+                }
+                _configureModuleActions = configureActions;
+            }
+
+            foreach (var configureModuleAction in _configureModuleActions)
+            {
+                configureModuleAction(this);
             }
         }
 
