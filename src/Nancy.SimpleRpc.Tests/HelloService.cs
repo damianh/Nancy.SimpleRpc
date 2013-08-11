@@ -8,7 +8,7 @@
     {
         public Task<object> Execute(HelloRequest request, CancellationToken cancellationToken)
         {
-            return Task.FromResult((object)new HelloResponse { Result = "Hello, " + request.Name });
+            return Task.FromResult<object>(new HelloResponse { Result = "Hello, " + request.Name });
         }
     }
 }
