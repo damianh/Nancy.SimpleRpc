@@ -12,17 +12,17 @@
         private readonly IServiceResolver _serviceResolver;
         private readonly Assembly _serviceAssembly;
 
-        protected SimpleRpcModule()
-            : this(Assembly.GetCallingAssembly(), string.Empty)
+        protected SimpleRpcModule(IServiceResolver serviceResolver)
+            : this(serviceResolver, Assembly.GetCallingAssembly(), string.Empty)
         { }
 
-        protected SimpleRpcModule(Assembly serviceAssembly)
-            : this(serviceAssembly, string.Empty)
+        protected SimpleRpcModule(IServiceResolver serviceResolver, Assembly serviceAssembly)
+            : this(serviceResolver, serviceAssembly, string.Empty)
         {}
 
-        protected SimpleRpcModule(Assembly serviceAssembly, string modulePath) : base(modulePath)
+        protected SimpleRpcModule(IServiceResolver serviceResolver, Assembly serviceAssembly, string modulePath) : base(modulePath)
         {
-            //_serviceResolver = serviceResolver;
+            _serviceResolver = serviceResolver;
             _serviceAssembly = serviceAssembly;
             IEnumerable<Type> services = _serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<>)));
 
