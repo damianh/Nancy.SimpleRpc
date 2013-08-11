@@ -5,6 +5,6 @@
 
     public interface IServiceClient
     {
-        Task<TResponse> Send<TRequest, TResponse>(TRequest request, CancellationToken token) where TResponse : new();
+        Task<TResponse> Send<TResponse>(object request, CancellationToken token) where TResponse : new();
     }
 }

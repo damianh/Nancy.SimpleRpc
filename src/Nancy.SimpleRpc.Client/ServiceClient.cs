@@ -25,14 +25,18 @@
             _httpMessageHandler = httpMessageHandler;
         }
 
-        public async Task<TResponse> Send<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
+        public async Task<TResponse> Send<TResponse>(object request, CancellationToken cancellationToken)
             where TResponse : new()
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
             HttpClient httpClient = (_httpMessageHandler != null) ? new HttpClient(_httpMessageHandler) : new HttpClient();
             string requestJson = JsonConvert.SerializeObject(request);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response =
-                await httpClient.PostAsync(_baseUri + "/" + typeof (TRequest).Name,
+                await httpClient.PostAsync(_baseUri + "/" + request.GetType().Name,
                         new StringContent(requestJson, Encoding.UTF8, "application/json"),
                         cancellationToken);
             string responseString = await response.Content.ReadAsStringAsync();

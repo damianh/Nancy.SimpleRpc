@@ -5,9 +5,9 @@
 
     public static class ServiceClientExtensions
     {
-        public static Task<TResponse> Send<TRequest, TResponse>(this IServiceClient serviceClient, TRequest request) where TResponse : new()
+        public static Task<TResponse> Send<TResponse>(this IServiceClient serviceClient, object request) where TResponse : new()
         {
-            return serviceClient.Send<TRequest, TResponse>(request, CancellationToken.None);
+            return serviceClient.Send<TResponse>(request, CancellationToken.None);
         }
     }
 }

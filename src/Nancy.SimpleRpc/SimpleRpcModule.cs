@@ -20,12 +20,12 @@
         {
             _serviceResolver = serviceResolver;
             _serviceAssembly = serviceAssembly;
-            IEnumerable<Type> services = _serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<,>)));
+            IEnumerable<Type> services = _serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<>)));
 
             foreach (Type service in services)
             {
                 var typeArguments = service.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IService<,>))
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IService<>))
                     .SelectMany(i => i.GetGenericArguments())
                     .ToArray();
                 MethodInfo methodInfo = typeof(SimpleRpcModule).GetMethod("Handle", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -34,13 +34,12 @@
             }
         }
 
-        private void Handle<TRequest, TResponse>()
-            where TResponse : new()
+        private void Handle<TRequest>()
             where TRequest : new()
         {
             Post[typeof(TRequest).Name, true] = async (ctx, ct) =>
             {
-                IService<TRequest, TResponse> service = _serviceResolver.GetService<TRequest, TResponse>();
+                IService<TRequest> service = _serviceResolver.GetService<TRequest>();
                 var request = this.Bind<TRequest>();
                 return await service.Execute(request, ct);
             };

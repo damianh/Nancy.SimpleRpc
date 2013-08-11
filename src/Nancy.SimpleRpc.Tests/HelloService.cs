@@ -4,11 +4,11 @@
     using System.Threading.Tasks;
     using Nancy.SimpleRpc;
 
-    public class HelloService : IService<HelloRequest, HelloResponse>
+    public class HelloService : IService<HelloRequest>
     {
-        public Task<HelloResponse> Execute(HelloRequest request, CancellationToken cancellationToken)
+        public Task<object> Execute(HelloRequest request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new HelloResponse { Result = "Hello, " + request.Name });
+            return Task.FromResult((object)new HelloResponse { Result = "Hello, " + request.Name });
         }
     }
 }

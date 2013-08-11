@@ -1,7 +1,7 @@
 ﻿namespace Nancy.SimpleRpc.Tests
 {
     using System.Threading.Tasks;
-    using Client;
+    using Nancy.SimpleRpc.Client;
     using FluentAssertions;
     using Testing;
     using TinyIoc;
@@ -12,8 +12,8 @@
         [Fact]
         public async Task Can_invoke_service()
         {
-            IServiceClient client = new TestServiceClient("http://example.com", new HelloServiceBootstrapper());
-            HelloResponse response = await client.Send<HelloRequest, HelloResponse>(new HelloRequest { Name = "World!" });
+            var host = new TestServiceHost("http://example.com", new HelloServiceBootstrapper());
+            HelloResponse response = await host.Client.Send<HelloResponse>(new HelloRequest { Name = "World!" });
             response.Result.Should().Be("Hello, World!");
         }
 
@@ -26,7 +26,7 @@
                 container.Register<IServiceResolver>((tinyIoCContainer, _) => new DelegateServiceResolver(tinyIoCContainer.Resolve));
 
                 // Shouldn't TinyIoC automagically discover this?
-                container.Register<IService<HelloRequest, HelloResponse>, HelloService>();
+                container.Register<IService<HelloRequest>, HelloService>();
             }
         }
     }
