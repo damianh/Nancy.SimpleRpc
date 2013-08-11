@@ -1,7 +1,9 @@
 ﻿namespace Nancy.SimpleRpc.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Nancy.Bootstrapper;
     using Nancy.SimpleRpc.Client;
     using Nancy.SimpleRpc.Testing;
     using Nancy.TinyIoc;
@@ -22,8 +24,8 @@
             protected override void ConfigureApplicationContainer(TinyIoCContainer container)
             {
                 base.ConfigureApplicationContainer(container);
+                
                 container.Register<IServiceResolver>((tinyIoCContainer, _) => new DelegateServiceResolver(tinyIoCContainer.Resolve));
-
                 container.Register<IService<HelloRequest>, HelloService>();
             }
         }
