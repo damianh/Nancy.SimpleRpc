@@ -1,7 +1,7 @@
 Nancy.SimpleRpc
 ===============
 
-A simple message based RPC over HTTP library
+A simple message based RPC over HTTP library built on NancyFx
 
 1) Define your request and response models:
 ```csharp
