@@ -24,7 +24,7 @@
                 base.ConfigureApplicationContainer(container);
                 
                 container.Register<IServiceResolver>((tinyIoCContainer, _) => new DelegateServiceResolver(tinyIoCContainer.Resolve));
-                container.Register<IService<HelloRequest>, HelloService>();
+                container.Register<IService<HelloRequest, HelloResponse>, HelloService>();
             }
         }
     }

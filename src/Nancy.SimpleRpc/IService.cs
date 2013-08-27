@@ -3,9 +3,10 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IService<in TRequest>
+    public interface IService<TRequest, TResponse>
         where TRequest: new()
+        where TResponse : new()
     {
-        Task<object> Execute(TRequest request, CancellationToken cancellationToken);
+        Task<TResponse> Execute(TRequest request, CancellationToken cancellationToken);
     }
 }

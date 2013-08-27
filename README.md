@@ -17,11 +17,11 @@ public class HelloResponse
 ```
 2) Define your service:
 ```csharp
-public class HelloService : IService<HelloRequest>
+public class HelloService : IService<HelloRequest, HelloResponse>
 {
-    public Task<object> Execute(HelloRequest request, CancellationToken cancellationToken)
+    public Task<HelloResponse> Execute(HelloRequest request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<object>(new HelloResponse { Result = "Hello, " + request.Name });
+        return Task.FromResult(new HelloResponse { Result = "Hello, " + request.Name });
     }
 }
 ```
@@ -33,7 +33,7 @@ private class HelloServiceBootstrapper : DefaultNancyBootstrapper
     {
         base.ConfigureApplicationContainer(container);
         container.Register<IServiceResolver>((tinyIoCContainer, _) => new DelegateServiceResolver(tinyIoCContainer.Resolve));
-        container.Register<IService<HelloRequest>, HelloService>();
+        container.Register<IService<HelloRequest, HelloResponse>, HelloService>();
     }
 }
 ```

@@ -11,9 +11,11 @@
             _getService = getService;
         }
 
-        public IService<TRequest> GetService<TRequest>() where TRequest : new()
+        public IService<TRequest,TResponse> GetService<TRequest, TResponse>()
+            where TRequest : new()
+            where TResponse : new()
         {
-            return (IService<TRequest>) _getService(typeof (IService<TRequest>));
+            return (IService<TRequest, TResponse>)_getService(typeof(IService<TRequest, TResponse>));
         }
     }
 }
