@@ -3,10 +3,12 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Nancy.SimpleRpc;
+    using Nancy.SimpleRpc.Tests.Annotations;
 
-    public class HelloService : IService<HelloRequest, HelloResponse>
+    [UsedImplicitly]
+    public class HelloRpcService : RpcService<HelloRequest, HelloResponse>
     {
-        public Task<HelloResponse> Execute(HelloRequest request, CancellationToken cancellationToken)
+        public override Task<HelloResponse> Execute(HelloRequest request, CancellationToken cancellationToken)
         {
             return Task.FromResult(new HelloResponse { Result = "Hello, " + request.Name });
         }

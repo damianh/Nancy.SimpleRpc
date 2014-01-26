@@ -37,10 +37,11 @@
     <Reference Include="System.Net.Http.WebRequest" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateServiceResolver.cs" />
-    <Compile Include="IServiceResolver.cs" />
+    <Compile Include="DelegateRpcServiceResolver.cs" />
+    <Compile Include="IRpcServiceResolver.cs" />
+    <Compile Include="RpcService.cs" />
     <Compile Include="SimpleRpcModule.cs" />
-    <Compile Include="IService.cs" />
+    <Compile Include="IRpcService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

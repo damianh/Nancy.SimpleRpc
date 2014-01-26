@@ -1,10 +1,14 @@
 ﻿namespace Nancy.SimpleRpc.Tests
 {
-    using Nancy.SimpleRpc;
+    using Nancy.SimpleRpc.Tests.Annotations;
 
+    [UsedImplicitly]
     public class HelloServiceModule : SimpleRpcModule
     {
-        public HelloServiceModule(IServiceResolver serviceResolver) : base(serviceResolver)
-        {}
+        public HelloServiceModule(IRpcServiceResolver rpcServiceResolver)
+            : base(rpcServiceResolver)
+        {
+            RegisterRpcServices();
+        }
     }
 }

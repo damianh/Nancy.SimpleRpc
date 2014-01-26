@@ -9,55 +9,46 @@
 
     public abstract class SimpleRpcModule : NancyModule
     {
-        private readonly IServiceResolver _serviceResolver;
-        private static IEnumerable<Action<object>> _configureModuleActions;
+        private readonly IRpcServiceResolver _rpcServiceResolver;
 
-        protected SimpleRpcModule(IServiceResolver serviceResolver)
-            : this(serviceResolver, Assembly.GetCallingAssembly(), string.Empty)
-        { }
-
-        protected SimpleRpcModule(IServiceResolver serviceResolver, Assembly serviceAssembly)
-            : this(serviceResolver, serviceAssembly, string.Empty)
-        {}
-
-        protected SimpleRpcModule(IServiceResolver serviceResolver, Assembly serviceAssembly, string modulePath) : base(modulePath)
+        public SimpleRpcModule(IRpcServiceResolver rpcServiceResolver)
         {
-            _serviceResolver = serviceResolver;
+            _rpcServiceResolver = rpcServiceResolver;
+        }
 
-            if (_configureModuleActions == null)
+        protected void RegisterRpcServices()
+        {
+            MethodInfo addEndpointMethod = typeof(SimpleRpcModule).GetMethod("AddEndpoint", BindingFlags.NonPublic | BindingFlags.Instance);
+            var assembly = Assembly.GetCallingAssembly();
+            IEnumerable<Type> services = assembly
+                   .GetExportedTypes()
+                   .Where(t => t.IsAssignableToGenericType(typeof(IRpcService<,>))
+                       && !t.IsInterface
+                       && !t.IsAbstract);
+
+            foreach (Type service in services)
             {
-                var configureActions = new List<Action<object>>();
-                IEnumerable<Type> services = serviceAssembly.GetExportedTypes().Where(t => t.IsAssignableToGenericType(typeof (IService<,>)));
+                var typeArguments =
+                    service.GetInterfaces()
+                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRpcService<,>))
+                        .SelectMany(i => i.GetGenericArguments())
+                        .ToArray();
 
-                foreach (Type service in services)
-                {
-                    var typeArguments =
-                        service.GetInterfaces()
-                            .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IService<,>))
-                            .SelectMany(i => i.GetGenericArguments())
-                            .ToArray();
-                    MethodInfo methodInfo = typeof (SimpleRpcModule).GetMethod("Handle", BindingFlags.NonPublic | BindingFlags.Instance);
-                    MethodInfo handleMethod = methodInfo.MakeGenericMethod(typeArguments);
-                    configureActions.Add(obj => handleMethod.Invoke(obj, new object[] { }));
-                }
-                _configureModuleActions = configureActions;
-            }
-
-            foreach (var configureModuleAction in _configureModuleActions)
-            {
-                configureModuleAction(this);
+                addEndpointMethod
+                    .MakeGenericMethod(typeArguments)
+                    .Invoke(this, new object[] { _rpcServiceResolver });
             }
         }
 
-        private void Handle<TRequest, TResponse>()
-            where TRequest : new()
-            where TResponse : new()
+        private void AddEndpoint<TRequest, TResponse>(IRpcServiceResolver rpcServiceResolver)
+            where TRequest : class, new()
+            where TResponse : class, new()
         {
             Post[typeof(TRequest).Name, true] = async (ctx, ct) =>
             {
-                IService<TRequest, TResponse> service = _serviceResolver.GetService<TRequest, TResponse>();
+                IRpcService<TRequest, TResponse> rpcService = rpcServiceResolver.GetService<TRequest, TResponse>();
                 var request = this.Bind<TRequest>();
-                return await service.Execute(request, ct);
+                return await rpcService.Execute(request, ct);
             };
         }
     }

@@ -48,10 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HelloRequest.cs" />
-    <Compile Include="HelloServiceModule.cs" />
     <Compile Include="HelloResponse.cs" />
-    <Compile Include="HelloService.cs" />
+    <Compile Include="HelloRpcService.cs" />
+    <Compile Include="HelloServiceModule.cs" />
     <Compile Include="HelloServiceTests.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
