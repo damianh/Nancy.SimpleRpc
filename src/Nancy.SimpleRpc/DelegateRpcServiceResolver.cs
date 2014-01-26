@@ -11,7 +11,7 @@
             _getService = getService;
         }
 
-        public IRpcService<TRequest,TResponse> GetService<TRequest, TResponse>()
+        public IRpcService<TRequest,TResponse> GetRpcService<TRequest, TResponse>()
             where TRequest : class, new()
             where TResponse : class, new()
         {

@@ -46,7 +46,7 @@
         {
             Post[typeof(TRequest).Name, true] = async (ctx, ct) =>
             {
-                IRpcService<TRequest, TResponse> rpcService = rpcServiceResolver.GetService<TRequest, TResponse>();
+                IRpcService<TRequest, TResponse> rpcService = rpcServiceResolver.GetRpcService<TRequest, TResponse>();
                 var request = this.Bind<TRequest>();
                 return await rpcService.Execute(request, ct);
             };
